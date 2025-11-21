@@ -3,7 +3,7 @@ import { GameState, GamePhase, FoodItem, BattleResult } from './types';
 import { generateScenario, evaluateTurn } from './geminiService';
 import { ComicButton } from './ComicButton';
 import { BattleScene } from './BattleScene';
-import { Loader2, Skull, Play, Star } from 'lucide-react';
+import { Loader2, Skull, Play, Star, AlertTriangle, ExternalLink } from 'lucide-react';
 
 const INITIAL_STATE: GameState = {
   phase: GamePhase.START,
@@ -43,7 +43,8 @@ export default function App() {
       }));
     } catch (error) {
       console.error("Error loading scenario", error);
-      setGameState(prev => ({ ...prev, phase: GamePhase.START })); // Reset on error
+      // Retry logic or error state could go here, currently just resetting
+      setGameState(prev => ({ ...prev, phase: GamePhase.START })); 
     }
   };
 
@@ -108,10 +109,34 @@ export default function App() {
 
   if (apiKeyMissing) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-yellow-50">
-        <div className="bg-white p-8 rounded-xl border-4 border-red-500 text-center comic-shadow">
-          <h1 className="text-2xl font-bold mb-2 comic-font">Configuration Error</h1>
-          <p>Please set the <code className="bg-gray-200 p-1 rounded">API_KEY</code> in the environment.</p>
+      <div className="min-h-screen flex items-center justify-center p-4 bg-yellow-50 pattern-dots">
+        <div className="bg-white p-8 rounded-3xl border-4 border-red-500 text-center comic-shadow max-w-lg w-full">
+          <AlertTriangle className="mx-auto text-red-500 mb-4" size={64} />
+          <h1 className="text-3xl font-bold mb-4 comic-font uppercase text-red-600">Missing Power Source!</h1>
+          <p className="mb-6 text-lg text-gray-700 font-bold">
+            To defeat the villains, you need a Google Gemini API Key.
+          </p>
+          
+          <div className="bg-gray-100 p-4 rounded-xl border-2 border-black border-dashed mb-6">
+            <p className="text-sm text-gray-600 mb-2 font-bold uppercase">Step 1: Get your Free Key</p>
+            <a 
+              href="https://aistudio.google.com/app/apikey" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-bold underline text-lg"
+            >
+              Get API Key from Google AI Studio <ExternalLink size={18}/>
+            </a>
+          </div>
+
+          <div className="text-left text-sm bg-blue-50 p-4 rounded-xl border-l-4 border-blue-500">
+            <p className="font-bold mb-1 text-blue-800">How to add it:</p>
+            <ul className="list-disc list-inside space-y-1 text-gray-700">
+              <li>Create a file named <code className="bg-white px-1 rounded border">.env</code> in your project root.</li>
+              <li>Add this line: <code className="bg-white px-1 rounded border">API_KEY=your_key_here</code></li>
+              <li>Restart your app.</li>
+            </ul>
+          </div>
         </div>
       </div>
     );
